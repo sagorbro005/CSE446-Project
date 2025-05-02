@@ -122,6 +122,26 @@
         </tbody>
       </table>
     </div>
+
+
+
+    <div class="container mt-4" id="assign-investigator-form" style="display: none;">
+      <h4 class="text-center">Assign Investigator to a Case</h4>
+      <form onsubmit="App.assignInvestigator(); return false;" class="text-center">
+        <div class="form-group">
+          <label for="assign-case-id">Case ID:</label>
+          <input type="number" id="assign-case-id" class="form-control" required />
+        </div>
+    
+        <div class="form-group">
+          <label for="investigator-addr">Investigator Address:</label>
+          <input type="text" id="investigator-addr" class="form-control" required />
+        </div>
+    
+        <button type="submit" class="btn btn-success mt-2">Assign Investigator</button>
+      </form>
+    </div>
+    
     
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

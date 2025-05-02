@@ -194,10 +194,10 @@ contract MissingPersons {
 
     InvestigationAppointment[] public listOfAppointments;
     address public AdminAddr;
-    constructor(){
-        AdminAddr=msg.sender;
+    // constructor(){
+    //     AdminAddr=msg.sender;
     
-    }
+    // }
    function bookslot(uint256 caseId, uint256 slot, address investigatorNid,address reporterNid) public payable{
     if (users[reporterNid].role!=Role.Reporter){
         revert("Only reporters can request");

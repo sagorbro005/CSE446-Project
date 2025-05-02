@@ -116,6 +116,25 @@ App = {
       alert("Failed!");
     }
   },
+
+
+  assignInvestigator: async function () {
+    const caseId = document.getElementById("assign-case-id").value;
+    const investigatorAddr = document.getElementById("investigator-addr").value;
+  
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+  
+    try {
+      await contractInstance.assignInvestigator(App.account, caseId, investigatorAddr, {
+        from: App.account
+      });
+      alert("Investigator Assigned Successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to assign investigator: " + error.message);
+    }
+  },
+  
   
   render: async function() {
     // const loader = $("#loader");
@@ -138,13 +157,14 @@ App = {
   
     const contractInstance = await App.contracts.MissingPersons.deployed();
   
-    console.log("REndering started!");
+    // console.log("REndering started!");
     try {
 
       const userrole = await contractInstance.getUserRole(App.account);
-      console.log(`USER ROLE: ${userrole}`);
+      // console.log(`USER ROLE: ${userrole}`);
       if (userrole.toString() === "0") { // Admin
         document.getElementById("reg-form").style.display = "none";
+        document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
       }
       if (userrole.toString() === "1") { // Reporter
