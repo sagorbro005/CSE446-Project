@@ -26,6 +26,11 @@ contract MissingPersons {
         });
     }
 
+    function getUserRole(address account) public view returns (Role) {
+        User memory user = users[account];
+        return (user.role);
+    }
+
     enum Status { Missing, Found }
     enum Urgency { Low, High, Medium }
 
