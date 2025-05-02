@@ -46,8 +46,24 @@ App = {
       alert("Failed");
     }
 
-  }
+  },
 
+  submitReport: async function() {
+    const rname = document.getElementById("rname").value;
+    const rage = document.getElementById("rage").value;
+    const rloc = document.getElementById("rloc").value;
+    const rheight = document.getElementById("rheight").value;
+    const rdesc = document.getElementById("rdesc").value;
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+
+    try{
+      await contractInstance.addMissingPerson(App.account, rname, rage, rheight, rdesc, rloc, { from: App.account });
+      alert("Success!");
+    } catch(error){
+      console.log(error);
+      alert("Failed");
+    }
+  }
   // render: async function() {
   //   const loader = $("#loader");
   //   const content = $("#content");
