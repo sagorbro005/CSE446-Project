@@ -24,6 +24,10 @@ contract MissingPersons {
             role: Role(role),
             userAddress: addr
         });
+
+        if (role == 0) {
+            regAdmin(account);
+        }
     }
 
     function getUserRole(address account) public view returns (uint256) {
@@ -53,7 +57,7 @@ contract MissingPersons {
     address[] public adminAddresses;
     address public fAdmin;
     function regAdmin(address adminAccount) public {
-        require(users[adminAccount].role == Role.Admin, "Register can be done only by Admins");
+        // require(users[adminAccount].role == Role.Admin, "Register can be done only by Admins");
         if (fAdmin == address(0)){
             fAdmin = adminAccount;
         }
