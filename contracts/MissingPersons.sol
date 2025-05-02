@@ -7,19 +7,19 @@ contract MissingPersons {
     enum Role { Admin, Reporter, Investigator }
 
     struct User {
-        uint256 nid;
+        address account;
         string name;
         Role role;
         string userAddress;
     }
 
-    mapping(uint256 => User) public users;
+    mapping(address => User) public users;
 
-    function registerUser(uint256 nid, string memory name, uint role, string memory addr) public {
+    function registerUser(address account, string memory name, uint role, string memory addr) public {
         require(role >= 0 && role <= 2, "Invalid role");
 
-        users[nid] = User({
-            nid: nid,
+        users[account] = User({
+            account: account,
             name: name,
             role: Role(role),
             userAddress: addr
@@ -39,14 +39,14 @@ contract MissingPersons {
         string lastSeenDivision;
         string contactNumber;
         Urgency urgency;
-        uint256 reportedBy;
+        address reportedBy;
     }
 
     mapping(uint256 => MissingPerson) public cases;
     uint256 public currCaseId = 1;
 
-    function addMissingPerson(uint256 reporterNid, string memory name, uint256 age, uint256 height, string memory description, string memory division, string memory contactNumber) public {
-        require(users[reporterNid].role == Role.Reporter, "Only reporters can add new report");
+    function addMissingPerson(address reporterAccount, string memory name, uint256 age, uint256 height, string memory description, string memory division, string memory contactNumber) public {
+        require(users[reporterAccount].role == Role.Reporter, "Only reporters can add new report");
 
         Urgency urgencyLevel;
         if (age < 18) {
@@ -57,16 +57,16 @@ contract MissingPersons {
             urgencyLevel = Urgency.Low;
         }
 
-        cases[currCaseId] = MissingPerson(currCaseId, name, age, height,Status.Missing,description,division,contactNumber,urgencyLevel,reporterNid);
+        cases[currCaseId] = MissingPerson(currCaseId, name, age, height,Status.Missing,description,division,contactNumber,urgencyLevel,reporterAccount);
 
         currCaseId++;
         missingpersonCount++;
     }
     
 
-    mapping(uint256 => uint256) public assignedInvestigator;
-    function updateMissingStatus(uint256 adminNid, uint256 caseId, uint256 nstatus ) public {
-        if (users[adminNid].role != Role.Admin) {
+    mapping(uint256 => address) public assignedInvestigator;
+    function updateMissingStatus(address adminAccount, uint256 caseId, uint256 nstatus ) public {
+        if (users[adminAccount].role != Role.Admin) {
             revert("Update can be done only by admin");
         }
         if (cases[caseId].status!= Status.Missing) {
@@ -78,17 +78,17 @@ contract MissingPersons {
         cases[caseId].status=Status.Found;
     }
             
-   function assignInvestigator(uint256 adminNid, uint256 caseId, uint256 investigatorNid ) public {
-    if (users[adminNid].role != Role.Admin) {
+   function assignInvestigator(address adminAccount, uint256 caseId, address investigatorAccount ) public {
+    if (users[adminAccount].role != Role.Admin) {
             revert("Update can be done only by admin");
     }
-    if (users[investigatorNid].role != Role.Investigator) {
+    if (users[investigatorAccount].role != Role.Investigator) {
         revert("Invalid NID");
     }
-    if (assignedInvestigator[caseId]!=0){
+    if (assignedInvestigator[caseId]){ //this needs a fix
        revert("Can't assign twice in the same case");
     }
-    assignedInvestigator[caseId] = investigatorNid;
+    assignedInvestigator[caseId] = investigatorAccount;
    }
    uint256 public missingpersonCount=0;
 
@@ -171,11 +171,11 @@ contract MissingPersons {
         return false;
     }
    }
-    mapping(uint256 => mapping(uint256 => bool)) public slots;
+    mapping(address => mapping(uint256 => bool)) public slots;
     struct InvestigationAppointment{
-        uint256 investigatorNid;
+        address investigatorNid;
         uint256 caseId;
-        uint256 reporterNid;
+        address reporterNid;
         uint256 slot;
         
         
@@ -192,7 +192,7 @@ contract MissingPersons {
         AdminAddr=msg.sender;
     
     }
-   function bookslot(uint256 caseId, uint256 slot, uint256 investigatorNid,uint256 reporterNid) public payable{
+   function bookslot(uint256 caseId, uint256 slot, address investigatorNid,address reporterNid) public payable{
     if (users[reporterNid].role!=Role.Reporter){
         revert("Only reporters can request");
 
