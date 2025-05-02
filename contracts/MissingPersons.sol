@@ -50,6 +50,30 @@ contract MissingPersons {
         Urgency urgency;
         address reportedBy;
     }
+    address[] public adminAddresses;
+    address public fAdmin;
+    function regAdmin(address adminAccount) public {
+        require(users[adminAccount].role == Role.Admin, "Register can be done only by Admins");
+        if (fAdmin == address(0)){
+            fAdmin = adminAccount;
+        }
+        for (uint256 i = 0; i < adminAddresses.length; i++) {
+        if (adminAddresses[i] == adminAccount) {
+            revert("Admin already registered");
+        }
+        }
+
+        adminAddresses.push(adminAccount);
+    }
+    function getFirstAdmin() public view returns (address) {
+        return fAdmin;
+    } 
+
+    function getAllAdmins() public view returns (address[] memory) {
+       return adminAddresses;
+    }
+
+
 
     mapping(uint256 => MissingPerson) public cases;
     uint256 public currCaseId = 1;
