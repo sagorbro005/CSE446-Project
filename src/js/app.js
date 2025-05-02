@@ -63,6 +63,25 @@ App = {
       console.log(error);
       alert("Failed");
     }
+  },
+
+  searchMissingPersons: async function(check) {
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+    const result = await contractInstance.sorting.call(check, { from: App.account });
+    const divisions = result[0];
+    const counts = result[1];
+
+    const tbody = document.getElementById("resultsBody");
+
+    tbody.innerHTML = "";
+
+    for (let i=0; i<divisions.length; i++){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${divisions[i]}</td><td>${counts[i]}</td>`;
+      tbody.appendChild(tr);
+    }
+
+    document.getElementById("resultsTable").style.display="table";
   }
   // render: async function() {
   //   const loader = $("#loader");

@@ -83,6 +83,24 @@
       </form>
     </div>
 
+
+    <div class="container" id="search-form" style="width: 650px; display: none;">
+      <h3>Search Missing Persons</h3>
+      <button class="btn btn-primary" onclick="App.searchMissingPersons(true)">Sort Ascending</button>
+      <button class="btn btn-secondary" onclick="App.searchMissingPersons(false)">Sort Descending</button>
+      <table class="table mt-3" id="resultsTable" style="display: none;">
+        <thead>
+          <tr>
+            <th>Division</th>
+            <th>Missing Count</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+        </tbody>
+      </table>
+    </div>
+    
+
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
