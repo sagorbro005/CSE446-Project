@@ -3,11 +3,18 @@ App = {
   contracts: {},
   account: '0x0',
 
-  initWeb: function() {
+  initWeb: async function() {
     console.log('started');
     if (window.ethereum) {
       App.webProvider = window.ethereum;
       document.getElementById("reg-form").style.display = "block";
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        App.account = accounts[0]; // Get first connected MetaMask account
+        console.log("Connected account:", App.account);
+      } catch (error){
+        console.log(error);
+      }
     } else {
       $("#loader-msg").html('No metamask ethereum provider found');
       App.webProvider = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
@@ -32,7 +39,7 @@ App = {
     const contractInstance = await App.contracts.MissingPersons.deployed();
 
     try{
-      await contractInstance.registerUser({ from: App.account }, name, role, addr);
+      await contractInstance.registerUser(App.account, name, role, addr, { from: App.account });
       alert("Success!");
     } catch (error){
       console.log(error);
