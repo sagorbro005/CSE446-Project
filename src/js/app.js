@@ -8,10 +8,11 @@ App = {
     if (window.ethereum) {
       App.webProvider = window.ethereum;
       document.getElementById("reg-form").style.display = "block";
-      document.getElementById("report-form").style.display = "block";
+      // document.getElementById("report-form").style.display = "block";
       document.getElementById("search-form").style.display = "block";
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        console.log(accounts);
         App.account = accounts[0]; // Get first connected MetaMask account
         console.log("Connected account:", App.account);
       } catch (error){
@@ -29,7 +30,7 @@ App = {
     $.getJSON("MissingPersons.json", function( missingPersons) {
       App.contracts.MissingPersons = TruffleContract(missingPersons);
       App.contracts.MissingPersons.setProvider(App.webProvider);
-      App.listenForEvents();
+      // App.listenForEvents();
       return App.render();
     });
   },
@@ -43,6 +44,7 @@ App = {
     try{
       await contractInstance.registerUser(App.account, name, role, addr, { from: App.account });
       alert("Success!");
+      location.reload();
     } catch (error){
       console.log(error);
       alert("Failed");
@@ -68,6 +70,7 @@ App = {
     }
   },
 
+
   searchMissingPersons: async function(check) {
     const divisionList = {
       0: "Dhaka",
@@ -83,7 +86,7 @@ App = {
     const contractInstance = await App.contracts.MissingPersons.deployed();
     const result = await contractInstance.sorting.call(check, { from: App.account });
     console.log(result);
-    let divisions = result[0];   //need fix, getting empty strings
+    let divisions = result[0];
     const counts = result[1];
 
     const tbody = document.getElementById("resultsBody");
@@ -97,39 +100,68 @@ App = {
     }
 
     document.getElementById("resultsTable").style.display="table";
+  },
+
+
+  updateStatus: async function() {
+    const caseId = parseInt(document.getElementById("caseId").value);
+    const newStatus = parseInt(document.getElementById("newStatus").value);
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+  
+    try {
+      await contractInstance.updateMissingStatus(App.account, caseId, newStatus, { from: App.account });
+      alert("Success!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed!");
+    }
+  },
+  
+  render: async function() {
+    // const loader = $("#loader");
+    // const content = $("#content");
+  
+    // loader.show();
+    // content.hide();
+  
+    // if (window.ethereum) {
+    //   try {
+    //     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    //     App.account = accounts[0];
+    //     $("#accountAddress").html(`Connected: ${App.account}`);
+    //   } catch (error) {
+    //     console.warn('User denied account access');
+    //     $("#accountAddress").html("Your Account: Not Connected");
+    //     return;
+    //   }
+    // }
+  
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+  
+    console.log("REndering started!");
+    try {
+
+      const userrole = await contractInstance.getUserRole(App.account);
+      console.log(`USER ROLE: ${userrole}`);
+      if (userrole.toString() === "0") { // Admin
+        document.getElementById("reg-form").style.display = "none";
+        document.getElementById("status-update-form").style.display = "block";
+      }
+      if (userrole.toString() === "1") { // Reporter
+        document.getElementById("reg-form").style.display = "none";
+        document.getElementById("report-form").style.display = "block";
+      } 
+      if (userrole.toString() === "2") { // Investigator
+        document.getElementById("status-update-form").style.display = "block";
+      }
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+    }
+  
+    // loader.hide();
+    // content.show();
   }
-  // render: async function() {
-  //   const loader = $("#loader");
-  //   const content = $("#content");
-
-  //   loader.show();
-  //   content.hide();
-
-  //   if (window.ethereum) {
-  //     try {
-  //       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  //       App.account = accounts;
-  //       $("#accountAddress").html(`You have ${ App.account.length } account connected from metamask: ${ App.account } <br/> Current account in use: ${App.account[0]}`);
-  //     } catch (error) {
-  //       if (error.code === 4001) {
-  //         console.warn('user rejected')
-  //       }
-  //       $("#accountAddress").html("Your Account: Not Connected");
-  //       console.error(error);
-  //     }
-  //   }
-
-  //   const contractInstance = await App.contracts.MissingPersons.deployed();
-
-  //   const caseCount = await contractInstance.currCaseId;
-
-  //   const caseResults = await $("#caseResults");
-  //   caseResults.empty()
-
-  //   const personResults = await $("#personsResults");
-  //   personsResults.empty();
-
-  // }
+  
 
 
 };

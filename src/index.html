@@ -88,6 +88,25 @@
     </div>
 
 
+    <div class="container mt-4" id="status-update-form" style="display: none;">
+      <h3 class="text-center">Update Missing Person Status (Admin only)</h3>
+      <form onsubmit="App.updateStatus(); return false;">
+        <div class="form-group">
+          <label for="caseId">Case ID:</label>
+          <input type="number" id="caseId" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="newStatus">New Status:</label>
+          <select id="newStatus" class="form-control" required>
+            <option value="1">Found</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Update Status</button>
+      </form>
+    </div>
+    
+
+
     <div class="container" id="search-form" style="width: 650px; display: none;">
       <h3>Search Missing Persons</h3>
       <button class="btn btn-primary" onclick="App.searchMissingPersons(true)">Sort Ascending</button>
