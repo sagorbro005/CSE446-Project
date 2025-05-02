@@ -85,7 +85,7 @@ contract MissingPersons {
     if (users[investigatorAccount].role != Role.Investigator) {
         revert("Invalid NID");
     }
-    if (assignedInvestigator[caseId]){ //this needs a fix
+    if (assignedInvestigator[caseId]!=address(0)){
        revert("Can't assign twice in the same case");
     }
     assignedInvestigator[caseId] = investigatorAccount;
@@ -222,7 +222,3 @@ contract MissingPersons {
     return listOfAppointments;
  }
 }
-
-
-
-
