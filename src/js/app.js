@@ -8,6 +8,8 @@ App = {
     if (window.ethereum) {
       App.webProvider = window.ethereum;
       document.getElementById("reg-form").style.display = "block";
+      document.getElementById("report-form").style.display = "block";
+      document.getElementById("search-form").style.display = "block";
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         App.account = accounts[0]; // Get first connected MetaMask account
@@ -54,10 +56,11 @@ App = {
     const rloc = document.getElementById("rloc").value;
     const rheight = document.getElementById("rheight").value;
     const rdesc = document.getElementById("rdesc").value;
+    const rcon = document.getElementById("rcon").value;
     const contractInstance = await App.contracts.MissingPersons.deployed();
 
     try{
-      await contractInstance.addMissingPerson(App.account, rname, rage, rheight, rdesc, rloc, { from: App.account });
+      await contractInstance.addMissingPerson(App.account, rname, rage, rheight, rdesc, rloc, rcon, { from: App.account });
       alert("Success!");
     } catch(error){
       console.log(error);
@@ -66,18 +69,30 @@ App = {
   },
 
   searchMissingPersons: async function(check) {
+    const divisionList = {
+      0: "Dhaka",
+      1: "Barishal",
+      2: "Chittagong",
+      3: "Khulna",
+      4: "Rangpur",
+      5: "Mymensingh",
+      6: "Sylhet",
+      7: "Rajshahi"
+    }
+    
     const contractInstance = await App.contracts.MissingPersons.deployed();
     const result = await contractInstance.sorting.call(check, { from: App.account });
-    const divisions = result[0];
+    console.log(result);
+    let divisions = result[0];   //need fix, getting empty strings
     const counts = result[1];
 
     const tbody = document.getElementById("resultsBody");
 
     tbody.innerHTML = "";
-
+    console.log(divisions);
     for (let i=0; i<divisions.length; i++){
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${divisions[i]}</td><td>${counts[i]}</td>`;
+      tr.innerHTML = `<td>${divisionList[divisions[i]]}</td><td>${counts[i]}</td>`;
       tbody.appendChild(tr);
     }
 
