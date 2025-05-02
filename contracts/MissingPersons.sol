@@ -72,12 +72,16 @@ contract MissingPersons {
         missingpersonCount++;
     }
     
+    function caseExists(uint256 caseId) public view returns (bool) {
+    return caseId > 0 && caseId < currCaseId;
+    }
 
     mapping(uint256 => address) public assignedInvestigator;
     function updateMissingStatus(address adminAccount, uint256 caseId, uint256 nstatus ) public {
         if (users[adminAccount].role != Role.Admin) {
             revert("Update can be done only by admin");
         }
+        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         if (cases[caseId].status!= Status.Missing) {
             revert("Status cannot be changed.Found the person");
         }
