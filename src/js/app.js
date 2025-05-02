@@ -135,6 +135,28 @@ App = {
     }
   },
   
+
+  bookInvestigationSlot: async function () {
+    const caseId = document.getElementById("case-id").value;
+    const investigator = document.getElementById("investigator-address").value;
+    const slot = document.getElementById("slot").value;
+    const adminAddr = document.getElementById("admin-address").value;
+  
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+  
+    try {
+      await contractInstance.bookslot(caseId, slot, investigator, App.account, {
+        from: App.account,
+        value: web3.toWei(0.01, "ether") // 0.01 ETH
+      });
+  
+      document.getElementById("booking-status").style.display = "block";
+    } catch (error) {
+      console.error(error);
+      alert("Booking failed: " + error.message);
+    }
+  },
+  
   
   render: async function() {
     // const loader = $("#loader");
@@ -156,6 +178,8 @@ App = {
     // }
   
     const contractInstance = await App.contracts.MissingPersons.deployed();
+    // This part won't work!
+
   
     // console.log("REndering started!");
     try {
@@ -166,18 +190,33 @@ App = {
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
+        document.getElementById("slot-booking").style.display = "block";
+        // this part is not working yet! need function in solidity!
+        // const userCount = await contractInstance.userCount();
+        // const adminDropdown = document.getElementById("admin-address");
+        // adminDropdown.innerHTML = "";
+
+        // for (let i = 0; i < userCount; i++) {
+        //   const userAddr = await contractInstance.users(i);
+        //   const userData = await contractInstance.users(userAddr);
+        //   const option = document.createElement("option");
+        //   option.value = userAddr;
+        //   option.textContent = userAddr;
+        //   adminDropdown.appendChild(option);
+        // }
       }
       if (userrole.toString() === "1") { // Reporter
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("report-form").style.display = "block";
       } 
       if (userrole.toString() === "2") { // Investigator
-        document.getElementById("status-update-form").style.display = "block";
+        // document.getElementById("status-update-form").style.display = "block";
+        document.getElementById("reg-form").style.display = "none";
       }
     } catch (error) {
       console.error("Error fetching user role:", error);
     }
-  
+    
     // loader.hide();
     // content.show();
   }
