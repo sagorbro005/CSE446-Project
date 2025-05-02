@@ -104,6 +104,31 @@ contract MissingPersons {
     return caseId > 0 && caseId < currCaseId;
     }
 
+    // function getAllCases() public view returns (MissingPerson[] memory) {
+    //     MissingPerson[] memory allCases = new MissingPerson[](currCaseId - 1);
+    //     for (uint256 i = 1; i < currCaseId; i++) {
+    //         allCases[i - 1] = cases[i];
+    //     }
+    //     return allCases;
+    // }
+
+    function getCaseCount() public view returns (uint256) {
+        return currCaseId - 1;
+    }
+
+    function getCaseById(uint256 caseId) public view returns (MissingPerson memory) {
+        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
+        return cases[caseId];
+    }
+
+    function getAllCaseIds() public view returns (uint256[] memory) {
+        uint256[] memory caseIds = new uint256[](currCaseId - 1);
+        for (uint256 i = 1; i < currCaseId; i++) {
+            caseIds[i - 1] = cases[i].caseId;
+        }
+        return caseIds;
+    }
+
     mapping(uint256 => address) public assignedInvestigator;
     function updateMissingStatus(address adminAccount, uint256 caseId, uint256 nstatus ) public {
         if (users[adminAccount].role != Role.Admin) {

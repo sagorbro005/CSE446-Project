@@ -191,23 +191,50 @@ App = {
         document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
         document.getElementById("slot-booking").style.display = "block";
-        // this part is not working yet! need function in solidity!
-        // const userCount = await contractInstance.userCount();
-        // const adminDropdown = document.getElementById("admin-address");
-        // adminDropdown.innerHTML = "";
+       
+        const contractInstance = await App.contracts.MissingPersons.deployed();
+        const adminDropdown = document.getElementById("admin-address");
+        adminDropdown.innerHTML = "";
 
-        // for (let i = 0; i < userCount; i++) {
-        //   const userAddr = await contractInstance.users(i);
-        //   const userData = await contractInstance.users(userAddr);
-        //   const option = document.createElement("option");
-        //   option.value = userAddr;
-        //   option.textContent = userAddr;
-        //   adminDropdown.appendChild(option);
-        // }
+        const adminAddresses = await contractInstance.getAllAdmins();
+
+        adminAddresses.forEach((adminAddr) => {
+          const option = document.createElement("option");
+          option.value = adminAddr;
+          option.textContent = adminAddr;
+          adminDropdown.appendChild(option);
+        });
+
+
+        const caseIdsRaw = await contractInstance.getAllCaseIds();
+        const caseIds = caseIdsRaw.map(id => id.toNumber());
+        const caseIdDropdown = document.getElementById("caseId");
+        caseIdDropdown.innerHTML = "";
+
+        caseIds.forEach((caseId) => {
+          const option = document.createElement("option");
+          option.value = caseId;
+          option.textContent = caseId;
+          caseIdDropdown.appendChild(option);
+        });
+
+        const assignCaseDrop = document.getElementById("assign-case-id");
+        assignCaseDrop.innerHTML = "";
+        caseIds.forEach((caseId) => {
+          const option = document.createElement("option");
+          option.value = caseId;
+          option.textContent = caseId;
+          assignCaseDrop.appendChild(option);
+        });
+
+
       }
       if (userrole.toString() === "1") { // Reporter
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("report-form").style.display = "block";
+        const caseIDs = await contractInstance.getAllCaseIds();
+        // console.log(`Total Cases: ${caseCount}`);
+        console.log(caseIDs);
       } 
       if (userrole.toString() === "2") { // Investigator
         // document.getElementById("status-update-form").style.display = "block";

@@ -93,7 +93,13 @@
       <form onsubmit="App.updateStatus(); return false;">
         <div class="form-group">
           <label for="caseId">Case ID:</label>
-          <input type="number" id="caseId" class="form-control" required>
+          <select id="caseId" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="caseId">Case ID:</label>
+          <select id="caseId" class="form-control" required>
+            <!-- Options will be dynamically populated -->
+          </select>
         </div>
         <div class="form-group">
           <label for="newStatus">New Status:</label>
@@ -130,7 +136,7 @@
       <form onsubmit="App.assignInvestigator(); return false;" class="text-center">
         <div class="form-group">
           <label for="assign-case-id">Case ID:</label>
-          <input type="number" id="assign-case-id" class="form-control" required />
+          <select id="assign-case-id" class="form-control" required></select>
         </div>
     
         <div class="form-group">
