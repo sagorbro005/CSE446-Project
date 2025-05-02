@@ -105,20 +105,19 @@ contract MissingPersons {
     }
     return count;
    }
-   function sorting(bool ascend) public view returns (string[] memory, uint256[] memory) {
-    string[8] memory bdDiv=["Dhaka", "Barishal","Chittagong","Khulna","Rangpur","Mymensingh","Sylhet","Rajshahi"];
+   function sorting(bool ascend) public view returns (uint256[] memory, uint256[] memory) {
+    string[8] memory bdDivs=["Dhaka", "Barishal","Chittagong","Khulna","Rangpur","Mymensingh","Sylhet","Rajshahi"];
+    uint256[8] memory bdDiv = [uint256(0), uint256(1), uint256(2), uint256(3), uint256(4), uint256(5), uint256(6), uint256(7)];
     uint256[8] memory counts;
     
-    // Initialize counts
     for (uint256 k = 0; k < 8; k++) {
         counts[k] = 0;
     }
     
-    // Count missing persons per division
     for(uint256 j = 1; j < currCaseId; j++) {
         if (cases[j].status == Status.Missing) {
             for (uint256 k = 0; k < 8; k++) {
-                if (EqualityCheck(bytes(cases[j].lastSeenDivision), bytes(bdDiv[k]))) {
+                if (EqualityCheck(bytes(cases[j].lastSeenDivision), bytes(bdDivs[bdDiv[k]]))) {
                     counts[k]++;
                     break;
                 }
@@ -126,26 +125,24 @@ contract MissingPersons {
         }
     }
     
-    // Bubble sort - fixed implementation
+
     for (uint m = 0; m < 7; m++) {
         for (uint256 k = 0; k < 7 - m; k++) {
             bool cond = ascend ? counts[k] > counts[k + 1] : counts[k] < counts[k + 1];
             if (cond) {
-                // Swap counts
+
                 uint256 tcount = counts[k];
                 counts[k] = counts[k + 1];
                 counts[k + 1] = tcount;
-                
-                // Swap divisions
-                string memory tdiv = bdDiv[k];
+
+                uint256 tdiv = bdDiv[k];
                 bdDiv[k] = bdDiv[k + 1];
                 bdDiv[k + 1] = tdiv;
             }
         }
     }
     
-    // Prepare return values - using same variable names
-    string[] memory sortDiv = new string[](8);
+    uint256[] memory sortDiv = new uint256[](8);
     uint256[] memory sortcounts = new uint256[](8);
      
     for(uint256 i = 0; i < 8; i++) {
