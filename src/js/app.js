@@ -186,23 +186,30 @@ App = {
         caseIds.forEach(async (caseId) => {
           const option = document.createElement("option");
           option.value = caseId;
-          const missingName = await contractInstance.getMissingNameById(caseId);
-          const missingUrgency = await contractInstance.getMissingUrgencyById(caseId);
-          const missingAddr = await contractInstance.getMissingDivisionById(caseId);
-          option.textContent = `${caseId} - ${missingName} - ${urgency[missingUrgency]}  - ${missingAddr}`;
-          // option.textContent = caseId;
-          caseIdDropdown.appendChild(option);
-          // assignCaseDrop.appendChild(option);
+          const missingStatus = await contractInstance.getMissingStatusById(caseId);
+          if (missingStatus == 0){
+            const missingName = await contractInstance.getMissingNameById(caseId);
+            const missingUrgency = await contractInstance.getMissingUrgencyById(caseId);
+            const missingAddr = await contractInstance.getMissingDivisionById(caseId);
+            option.textContent = `${caseId} - ${missingName} - ${urgency[missingUrgency]}  - ${missingAddr}`;
+            // option.textContent = caseId;
+            caseIdDropdown.appendChild(option);
+            // assignCaseDrop.appendChild(option);
+          }
+          
         });
 
         caseIds.forEach(async (caseId) => {
           const option = document.createElement("option");
           option.value = caseId;
+          const missingStatus = await contractInstance.getMissingStatusById(caseId);
+          if (missingStatus == 0){
           const missingName = await contractInstance.getMissingNameById(caseId);
           const missingUrgency = await contractInstance.getMissingUrgencyById(caseId);
           const missingAddr = await contractInstance.getMissingDivisionById(caseId);
           option.textContent = `${caseId} - ${missingName} - ${urgency[missingUrgency]}  - ${missingAddr}`;
           assignCaseDrop.appendChild(option);
+          }
         });
 
 
