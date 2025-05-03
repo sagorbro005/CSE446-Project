@@ -287,7 +287,7 @@ contract MissingPersons {
         require(users[reporter].role == Role.Reporter, "Only reporters can book slots");
         require(users[investigator].role == Role.Investigator, "Invalid investigator");
         require(!bookedSlots[investigator][slot], "Slot already booked");
-        require(msg.value >= 0.01 ether, "Insufficient payment");
+        require(msg.value >= 0.0001 ether, "Insufficient payment");
 
         // Mark the slot as booked
         bookedSlots[investigator][slot] = true;
