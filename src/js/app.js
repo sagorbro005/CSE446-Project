@@ -190,7 +190,6 @@ App = {
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
-        document.getElementById("slot-booking").style.display = "block";
        
         const contractInstance = await App.contracts.MissingPersons.deployed();
         const adminDropdown = document.getElementById("admin-address");
@@ -232,9 +231,7 @@ App = {
       if (userrole.toString() === "1") { // Reporter
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("report-form").style.display = "block";
-        const caseIDs = await contractInstance.getAllCaseIds();
-        // console.log(`Total Cases: ${caseCount}`);
-        console.log(caseIDs);
+        document.getElementById("slot-booking").style.display = "block";
       } 
       if (userrole.toString() === "2") { // Investigator
         // document.getElementById("status-update-form").style.display = "block";
