@@ -157,7 +157,21 @@ App = {
     }
   },
   
+
+  reportFound: async function () {
+    const caseId = document.getElementById("report-case-id").value;
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+
+    try {
+      await contractInstance.reportFoundByInvestigator(caseId, { from: App.account });
+      alert("Report submitted successfully!");
+    } catch (error) {
+      console.error("Error reporting case as found:", error);
+      alert("Failed to submit report.");
+    }
+  },
   
+
   render: async function() {
     const urgency = ["High", "Medium", "Low"]
   
@@ -175,6 +189,8 @@ App = {
         document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
         document.getElementById("appointments-section").style.display = "block";
+        document.getElementById("reported-cases-section").style.display = "block";
+        await App.viewReportedCases();
 
         const caseIdsRaw = await contractInstance.getAllCaseIds();
         const caseIds = caseIdsRaw.map(id => id.toNumber());
@@ -229,7 +245,6 @@ App = {
         document.getElementById("report-form").style.display = "block";
         document.getElementById("slot-booking").style.display = "block";
         document.getElementById("appointments-section").style.display = "block";
-        
 
 
         const contractInstance = await App.contracts.MissingPersons.deployed();
@@ -275,6 +290,7 @@ App = {
       if (userrole.toString() === "2") { // Investigator
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("appointments-section").style.display = "block";
+        document.getElementById("report-found-section").style.display = "block";
       }
     } catch (error) {
       console.error("Error fetching user role:", error);
@@ -307,6 +323,31 @@ App = {
       document.getElementById("appointmentsTable").style.display = "table";
     } catch (error) {
       console.error("Error fetching appointments:", error);
+    }
+  },
+
+  viewReportedCases: async function () {
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+
+    try {
+      const caseIdsRaw = await contractInstance.getAllCaseIds();
+      const caseIds = caseIdsRaw.map(id => id.toNumber());
+      const tbody = document.getElementById("reportedCasesBody");
+      tbody.innerHTML = "";
+
+      for (const caseId of caseIds) {
+        const isReported = await contractInstance.isReportedFound(caseId);
+        if (isReported) {
+          const caseDetails = await contractInstance.getCaseById(caseId);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${caseId}</td><td>${caseDetails.name}</td><td>${caseDetails.lastSeenDivision}</td><td>${caseDetails.contactNumber}</td>`;
+          tbody.appendChild(tr);
+        }
+      }
+
+      document.getElementById("reportedCasesTable").style.display = "table";
+    } catch (error) {
+      console.error("Error fetching reported cases:", error);
     }
   }
 

@@ -7,7 +7,15 @@
    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
    <title>Missing Persons</title>
 
-
+  <style>
+    .container {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      padding: 20px;
+    }
+    
+  </style>
    <!-- Bootstrap -->
    <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -190,7 +198,7 @@
       </div>
     </div>
     
-    <div class="container" id="appointments-section" style="display: none; width: 650px;">
+    <div class="container" id="appointments-section" style="display: none;">
       <h4 class="text-center">Investigation Appointments</h4>
       <table class="table table-bordered" id="appointmentsTable" style="display: none;">
         <thead>
@@ -204,9 +212,36 @@
         <tbody id="appointmentsBody">
         </tbody>
       </table>
-      <button class="btn btn-primary mt-2" onclick="App.viewAppointments()">View Appointments</button>
+      <button class="btn btn-primary mt-2" onclick="App.viewAppointments()">Refresh</button>
     </div>
     
+    <div class="container" id="report-found-section" style="display: none; width: 650px;">
+      <h4 class="text-center">Report Found Case</h4>
+      <form onsubmit="App.reportFound(); return false;" class="text-center">
+        <div class="form-group">
+          <label for="report-case-id">Case ID:</label>
+          <input type="number" id="report-case-id" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-success mt-2">Report Found</button>
+      </form>
+    </div>
+
+    <div class="container" id="reported-cases-section" style="display: none; width: 650px;">
+      <h4 class="text-center">Reported Cases</h4>
+      <table class="table table-bordered" id="reportedCasesTable" style="display: none;">
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Name</th>
+            <th>Last Seen Division</th>
+            <th>Contact Number</th>
+          </tr>
+        </thead>
+        <tbody id="reportedCasesBody">
+        </tbody>
+      </table>
+      <button class="btn btn-primary mt-2" onclick="App.viewReportedCases()">View Reported Cases</button>
+    </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
