@@ -190,7 +190,22 @@
       </div>
     </div>
     
-    
+    <div class="container" id="appointments-section" style="display: none; width: 650px;">
+      <h4 class="text-center">Investigation Appointments</h4>
+      <table class="table table-bordered" id="appointmentsTable" style="display: none;">
+        <thead>
+          <tr>
+            <th>Investigator Address</th>
+            <th>Case ID</th>
+            <th>Reporter Address</th>
+            <th>Slot</th>
+          </tr>
+        </thead>
+        <tbody id="appointmentsBody">
+        </tbody>
+      </table>
+      <button class="btn btn-primary mt-2" onclick="App.viewAppointments()">View Appointments</button>
+    </div>
     
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

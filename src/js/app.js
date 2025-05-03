@@ -156,7 +156,6 @@ App = {
       alert("Booking failed: " + error.message);
     }
   },
-
   
   
   render: async function() {
@@ -175,7 +174,8 @@ App = {
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
-       
+        document.getElementById("appointments-section").style.display = "block";
+
         const caseIdsRaw = await contractInstance.getAllCaseIds();
         const caseIds = caseIdsRaw.map(id => id.toNumber());
 
@@ -228,6 +228,8 @@ App = {
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("report-form").style.display = "block";
         document.getElementById("slot-booking").style.display = "block";
+        document.getElementById("appointments-section").style.display = "block";
+        
 
 
         const contractInstance = await App.contracts.MissingPersons.deployed();
@@ -272,16 +274,41 @@ App = {
       } 
       if (userrole.toString() === "2") { // Investigator
         document.getElementById("reg-form").style.display = "none";
+        document.getElementById("appointments-section").style.display = "block";
       }
     } catch (error) {
       console.error("Error fetching user role:", error);
     }
+
+    try {
+      await App.viewAppointments();
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
     
     // loader.hide();
     // content.show();
-  }
-  
+  },
 
+  viewAppointments: async function () {
+    const contractInstance = await App.contracts.MissingPersons.deployed();
+
+    try {
+      const [investigatorNids, caseIds, reporterNids, slots] = await contractInstance.viewAppointment();
+      const tbody = document.getElementById("appointmentsBody");
+      tbody.innerHTML = "";
+
+      for (let i = 0; i < investigatorNids.length; i++) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${investigatorNids[i]}</td><td>${caseIds[i]}</td><td>${reporterNids[i]}</td><td>${slots[i]}</td>`;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById("appointmentsTable").style.display = "table";
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  }
 
 };
 

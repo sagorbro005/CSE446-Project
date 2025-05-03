@@ -314,7 +314,21 @@ contract MissingPersons {
     }
 
     InvestigationAppointment[] public listOfAppointments;
- function viewAppointment() public view returns (InvestigationAppointment[] memory) {
-    return listOfAppointments;
- }
+    function viewAppointment() public view returns (address[] memory, uint256[] memory, address[] memory, uint256[] memory) {
+        uint256 length = listOfAppointments.length;
+        address[] memory investigatorNids = new address[](length);
+        uint256[] memory caseIds = new uint256[](length);
+        address[] memory reporterNids = new address[](length);
+        uint256[] memory slotss = new uint256[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            InvestigationAppointment memory appointment = listOfAppointments[i];
+            investigatorNids[i] = appointment.investigatorNid;
+            caseIds[i] = appointment.caseId;
+            reporterNids[i] = appointment.reporterNid;
+            slotss[i] = appointment.slot;
+        }
+
+        return (investigatorNids, caseIds, reporterNids, slotss);
+    }
 }
