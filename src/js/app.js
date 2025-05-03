@@ -167,7 +167,7 @@ App = {
       alert("Report submitted successfully!");
     } catch (error) {
       console.error("Error reporting case as found:", error);
-      alert("Failed to submit report.");
+      alert("Failed to submit report--->", error);
     }
   },
   
@@ -337,7 +337,10 @@ App = {
 
       for (const caseId of caseIds) {
         const isReported = await contractInstance.isReportedFound(caseId);
-        if (isReported) {
+        const status = await contractInstance.getMissingStatusById(caseId);
+        
+        // Check if the case was reported by investigator AND status is Found (1)
+        if (isReported && status == 1) {
           const caseDetails = await contractInstance.getCaseById(caseId);
           const tr = document.createElement("tr");
           tr.innerHTML = `<td>${caseId}</td><td>${caseDetails.name}</td><td>${caseDetails.lastSeenDivision}</td><td>${caseDetails.contactNumber}</td>`;
