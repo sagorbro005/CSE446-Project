@@ -345,4 +345,16 @@ contract MissingPersons {
     function isReportedFound(uint256 caseId) public view returns (bool) {
         return investigatorReports[caseId];
     }
+
+    function reportFoundByInvestigator(uint256 caseId) public {
+        require(users[msg.sender].role == Role.Investigator, "Only investigators can report");
+        require(caseExists(caseId), "CaseId is invalid, doesn't exist");
+        require(cases[caseId].status == Status.Missing, "Case is already marked as found");
+        
+        // Mark the case as reported by investigator
+        investigatorReports[caseId] = true;
+        
+        // Update the case status to Found
+        cases[caseId].status = Status.Found;
+    }
 }
