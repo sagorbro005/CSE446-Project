@@ -27,7 +27,9 @@ contract MissingPersons {
 
         if (role == 0) {
             regAdmin(account);
-        }
+        } else if (role == 2) {
+            regInvestigator(account);
+        } 
     }
 
     function getUserRole(address account) public view returns (uint256) {
@@ -35,12 +37,22 @@ contract MissingPersons {
             User memory user = users[account];
             return uint256(user.role);
         }
-        return 5;
-        
+        return 5;      
     }
 
+
+    function getUserName(address account) public view returns (string memory) {
+        if (users[account].account != address(0)){
+            User memory user = users[account];
+            return user.name;
+        }
+        return "Not Found";      
+    }
+
+
+
     enum Status { Missing, Found }
-    enum Urgency { Low, High, Medium }
+    enum Urgency { High, Medium, Low }
 
     struct MissingPerson {
         uint256 caseId;
@@ -55,17 +67,18 @@ contract MissingPersons {
         address reportedBy;
     }
     address[] public adminAddresses;
+    address[] public investigatorAddresses;
     address public fAdmin;
     function regAdmin(address adminAccount) public {
         // require(users[adminAccount].role == Role.Admin, "Register can be done only by Admins");
         if (fAdmin == address(0)){
             fAdmin = adminAccount;
         }
-        for (uint256 i = 0; i < adminAddresses.length; i++) {
-        if (adminAddresses[i] == adminAccount) {
-            revert("Admin already registered");
-        }
-        }
+        // for (uint256 i = 0; i < adminAddresses.length; i++) {
+        // if (adminAddresses[i] == adminAccount) {
+        //     revert("Admin already registered");
+        // }
+        // }
 
         adminAddresses.push(adminAccount);
     }
@@ -75,6 +88,21 @@ contract MissingPersons {
 
     function getAllAdmins() public view returns (address[] memory) {
        return adminAddresses;
+    }
+
+    function regInvestigator(address investigatorAccount) public {
+        investigatorAddresses.push(investigatorAccount);
+    }
+    function getAllInvestigators() public view returns (address[] memory) {
+        address[] memory investigators = new address[](adminAddresses.length);
+        uint256 count = 0;
+        for (uint256 i = 0; i < adminAddresses.length; i++) {
+            if (users[adminAddresses[i]].role == Role.Investigator) {
+                investigators[count] = adminAddresses[i];
+                count++;
+            }
+        }
+        return investigators;
     }
 
 
@@ -104,13 +132,6 @@ contract MissingPersons {
     return caseId > 0 && caseId < currCaseId;
     }
 
-    // function getAllCases() public view returns (MissingPerson[] memory) {
-    //     MissingPerson[] memory allCases = new MissingPerson[](currCaseId - 1);
-    //     for (uint256 i = 1; i < currCaseId; i++) {
-    //         allCases[i - 1] = cases[i];
-    //     }
-    //     return allCases;
-    // }
 
     function getCaseCount() public view returns (uint256) {
         return currCaseId - 1;
@@ -128,6 +149,25 @@ contract MissingPersons {
         }
         return caseIds;
     }
+
+
+    function getMissingNameById(uint256 caseId) public view returns (string memory) {
+        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
+        return cases[caseId].name;
+    }
+    function getMissingStatusById(uint256 caseId) public view returns (Status) {
+        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
+        return cases[caseId].status;
+    }
+    function getMissingDivisionById(uint256 caseId) public view returns (string memory) {
+        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
+        return cases[caseId].lastSeenDivision;
+    }
+    function getMissingUrgencyById(uint256 caseId) public view returns (Urgency) {
+        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
+        return cases[caseId].urgency;
+    }
+
 
     mapping(uint256 => address) public assignedInvestigator;
     function updateMissingStatus(address adminAccount, uint256 caseId, uint256 nstatus ) public {

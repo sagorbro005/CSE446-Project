@@ -159,23 +159,7 @@ App = {
   
   
   render: async function() {
-    // const loader = $("#loader");
-    // const content = $("#content");
-  
-    // loader.show();
-    // content.hide();
-  
-    // if (window.ethereum) {
-    //   try {
-    //     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    //     App.account = accounts[0];
-    //     $("#accountAddress").html(`Connected: ${App.account}`);
-    //   } catch (error) {
-    //     console.warn('User denied account access');
-    //     $("#accountAddress").html("Your Account: Not Connected");
-    //     return;
-    //   }
-    // }
+    const urgency = ["High", "Medium", "Low"]
   
     const contractInstance = await App.contracts.MissingPersons.deployed();
     // This part won't work!
@@ -191,6 +175,44 @@ App = {
         document.getElementById("assign-investigator-form").style.display = "block";
         document.getElementById("status-update-form").style.display = "block";
        
+        const caseIdsRaw = await contractInstance.getAllCaseIds();
+        const caseIds = caseIdsRaw.map(id => id.toNumber());
+
+        const caseIdDropdown = document.getElementById("caseId");
+        caseIdDropdown.innerHTML = "";
+        const assignCaseDrop = document.getElementById("assign-case-id");
+        assignCaseDrop.innerHTML = "";
+
+        caseIds.forEach(async (caseId) => {
+          const option = document.createElement("option");
+          option.value = caseId;
+          const missingName = await contractInstance.getMissingNameById(caseId);
+          const missingUrgency = await contractInstance.getMissingUrgencyById(caseId);
+          const missingAddr = await contractInstance.getMissingDivisionById(caseId);
+          option.textContent = `${caseId} - ${missingName} - ${urgency[missingUrgency]}  - ${missingAddr}`;
+          // option.textContent = caseId;
+          caseIdDropdown.appendChild(option);
+          // assignCaseDrop.appendChild(option);
+        });
+
+        caseIds.forEach(async (caseId) => {
+          const option = document.createElement("option");
+          option.value = caseId;
+          const missingName = await contractInstance.getMissingNameById(caseId);
+          const missingUrgency = await contractInstance.getMissingUrgencyById(caseId);
+          const missingAddr = await contractInstance.getMissingDivisionById(caseId);
+          option.textContent = `${caseId} - ${missingName} - ${urgency[missingUrgency]}  - ${missingAddr}`;
+          assignCaseDrop.appendChild(option);
+        });
+
+
+      }
+      if (userrole.toString() === "1") { // Reporter
+        document.getElementById("reg-form").style.display = "none";
+        document.getElementById("report-form").style.display = "block";
+        document.getElementById("slot-booking").style.display = "block";
+
+
         const contractInstance = await App.contracts.MissingPersons.deployed();
         const adminDropdown = document.getElementById("admin-address");
         adminDropdown.innerHTML = "";
@@ -204,37 +226,8 @@ App = {
           adminDropdown.appendChild(option);
         });
 
-
-        const caseIdsRaw = await contractInstance.getAllCaseIds();
-        const caseIds = caseIdsRaw.map(id => id.toNumber());
-        const caseIdDropdown = document.getElementById("caseId");
-        caseIdDropdown.innerHTML = "";
-
-        caseIds.forEach((caseId) => {
-          const option = document.createElement("option");
-          option.value = caseId;
-          option.textContent = caseId;
-          caseIdDropdown.appendChild(option);
-        });
-
-        const assignCaseDrop = document.getElementById("assign-case-id");
-        assignCaseDrop.innerHTML = "";
-        caseIds.forEach((caseId) => {
-          const option = document.createElement("option");
-          option.value = caseId;
-          option.textContent = caseId;
-          assignCaseDrop.appendChild(option);
-        });
-
-
-      }
-      if (userrole.toString() === "1") { // Reporter
-        document.getElementById("reg-form").style.display = "none";
-        document.getElementById("report-form").style.display = "block";
-        document.getElementById("slot-booking").style.display = "block";
       } 
       if (userrole.toString() === "2") { // Investigator
-        // document.getElementById("status-update-form").style.display = "block";
         document.getElementById("reg-form").style.display = "none";
       }
     } catch (error) {
