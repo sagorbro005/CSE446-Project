@@ -145,7 +145,7 @@ App = {
     const contractInstance = await App.contracts.MissingPersons.deployed();
   
     try {
-      await contractInstance.bookSlot(caseId, slot, investigator, App.account, {
+      await contractInstance.bookSlot(caseId, slot, investigator, App.account, adminAddr,{
         from: App.account,
         value: 10000000000000000 
       });
