@@ -212,6 +212,15 @@ App = {
           }
         });
 
+        const investigatorAddresses =  await contractInstance.getAllInvestigators();
+        const investigatorDropdown = document.getElementById("investigator-addr");
+        investigatorDropdown.innerHTML = "";
+        investigatorAddresses.forEach((investigatorAddr) => {
+          const option = document.createElement("option");
+          option.value = investigatorAddr;
+          option.textContent = investigatorAddr;
+          investigatorDropdown.appendChild(option);
+        });
 
       }
       if (userrole.toString() === "1") { // Reporter
