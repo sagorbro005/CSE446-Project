@@ -77,7 +77,16 @@
         </div>
         <div class="form-group">
           <label for="rloc">Last Seen Location:</label>
-          <input type="text" id="rloc" class="form-control" required>
+          <select id="rloc" class="form-control" required>
+            <option value="Dhaka">Dhaka</option>
+            <option value="Chittagong">Chittagong</option>
+            <option value="Rajshahi">Rajshahi</option>
+            <option value="Khulna">Khulna</option>
+            <option value="Barisal">Barisal</option>
+            <option value="Sylhet">Sylhet</option>
+            <option value="Rangpur">Rangpur</option>
+            <option value="Mymensingh">Mymensingh</option>
+          </select>
         </div>
         <div class="form-group">
           <label for="rcon">Contact Number:</label>
@@ -163,20 +172,22 @@
         </div>
     
         <div class="form-group">
-          <label for="slot">Slot (e.g., 0-23 for hours):</label>
-          <input type="number" id="slot" class="form-control" min="0" max="23" required />
-        </div>
-    
-        <div class="form-group">
-          <label for="admin-address">Admin Address to Receive Payment:</label>
-          <select id="admin-address" class="form-control" required>
-            <!-- Populate dynamically -->
+          <label for="slot">Select Time Slot:</label>
+          <select id="slot" class="form-control" required>
+          
           </select>
         </div>
     
-        <button type="submit" class="btn btn-primary mt-2">Book Slot</button>
-        <div id="booking-status" class="mt-3 text-success" style="display: none;">Slot booked successfully!</div>
+        <div class="form-group">
+          <label for="admin-address">Admin Address:</label>
+          <select id="admin-address" class="form-control" required></select>
+        </div>
+    
+        <button type="submit" class="btn btn-success mt-2">Book Slot</button>
       </form>
+      <div id="booking-status" class="alert alert-success mt-3" style="display: none;">
+        Booking Successful!
+      </div>
     </div>
     
     

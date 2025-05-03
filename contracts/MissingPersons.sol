@@ -94,15 +94,7 @@ contract MissingPersons {
         investigatorAddresses.push(investigatorAccount);
     }
     function getAllInvestigators() public view returns (address[] memory) {
-        address[] memory investigators = new address[](adminAddresses.length);
-        uint256 count = 0;
-        for (uint256 i = 0; i < adminAddresses.length; i++) {
-            if (users[adminAddresses[i]].role == Role.Investigator) {
-                investigators[count] = investigatorAddresses[i];
-                count++;
-            }
-        }
-        return investigators;
+        return investigatorAddresses;
     }
 
 
@@ -284,10 +276,42 @@ contract MissingPersons {
         
     }
     
+    
+    mapping(address => mapping(uint256 => bool)) public bookedSlots;
+
+
+    uint256 public constant SLOT_DURATION = 10 minutes;
+
+
+    function bookSlot(uint256 caseId, uint256 slot, address investigator, address reporter) public payable {
+        require(users[reporter].role == Role.Reporter, "Only reporters can book slots");
+        require(users[investigator].role == Role.Investigator, "Invalid investigator");
+        require(!bookedSlots[investigator][slot], "Slot already booked");
+        require(msg.value >= 0.01 ether, "Insufficient payment");
+
+        // Mark the slot as booked
+        bookedSlots[investigator][slot] = true;
+
+        // Record the appointment
+        listOfAppointments.push(InvestigationAppointment({
+            investigatorNid: investigator,
+            caseId: caseId,
+            reporterNid: reporter,
+            slot: slot
+        }));
+
+        
+        payable(AdminAddr).transfer(msg.value);
+    }
 
     
-
-  
+    function getAvailableSlots(address investigator) public view returns (bool[144] memory) {
+        bool[144] memory availableSlots;
+        for (uint256 i = 0; i < 144; i++) {
+            availableSlots[i] = !bookedSlots[investigator][i];
+        }
+        return availableSlots;
+    }
 
     InvestigationAppointment[] public listOfAppointments;
     address public AdminAddr;
@@ -295,32 +319,32 @@ contract MissingPersons {
     //     AdminAddr=msg.sender;
     
     // }
-   function bookslot(uint256 caseId, uint256 slot, address investigatorNid,address reporterNid) public payable{
-    if (users[reporterNid].role!=Role.Reporter){
-        revert("Only reporters can request");
+//    function bookslot(uint256 caseId, uint256 slot, address investigatorNid,address reporterNid) public payable{
+//     if (users[reporterNid].role!=Role.Reporter){
+//         revert("Only reporters can request");
 
-    }
-    if (users[investigatorNid].role != Role.Investigator){
-        revert("Not an investigator");
-    }
-    if(slots[investigatorNid][slot]== true){
-        revert("Slot taken");
-    }
+//     }
+//     if (users[investigatorNid].role != Role.Investigator){
+//         revert("Not an investigator");
+//     }
+//     if(slots[investigatorNid][slot]== true){
+//         revert("Slot taken");
+//     }
 
-    if (msg.value < 10000000000000000){
-        revert("Need to pay little amount to admin");
-    }
-    slots[investigatorNid][slot]=true;
-    listOfAppointments.push(InvestigationAppointment({
-        investigatorNid: investigatorNid,
-        caseId: caseId,
-        reporterNid: reporterNid,
-        slot: slot
-    }
-        ));
-        payable(AdminAddr).transfer(msg.value);
+//     if (msg.value < 10000000000000000){
+//         revert("Need to pay little amount to admin");
+//     }
+//     slots[investigatorNid][slot]=true;
+//     listOfAppointments.push(InvestigationAppointment({
+//         investigatorNid: investigatorNid,
+//         caseId: caseId,
+//         reporterNid: reporterNid,
+//         slot: slot
+//     }
+//         ));
+//         payable(AdminAddr).transfer(msg.value);
 
-    }
+//     }
  function viewAppointment() public view returns (InvestigationAppointment[] memory) {
     return listOfAppointments;
  }

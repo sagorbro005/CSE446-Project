@@ -145,9 +145,9 @@ App = {
     const contractInstance = await App.contracts.MissingPersons.deployed();
   
     try {
-      await contractInstance.bookslot(caseId, slot, investigator, App.account, {
+      await contractInstance.bookSlot(caseId, slot, investigator, App.account, {
         from: App.account,
-        value: web3.toWei(0.01, "ether") // 0.01 ETH
+        value: 10000000000000000 
       });
   
       document.getElementById("booking-status").style.display = "block";
@@ -156,6 +156,7 @@ App = {
       alert("Booking failed: " + error.message);
     }
   },
+
   
   
   render: async function() {
@@ -240,6 +241,32 @@ App = {
           option.value = adminAddr;
           option.textContent = adminAddr;
           adminDropdown.appendChild(option);
+        });
+
+        const investigatorDropdown = document.getElementById("investigator-address");
+        investigatorDropdown.innerHTML = "";
+        const investigators = await contractInstance.getAllInvestigators();
+        investigators.forEach((investigator) => {
+          const option = document.createElement("option");
+          option.value = investigator;
+          option.textContent = investigator;
+          investigatorDropdown.appendChild(option);
+        });
+        const investigator = document.getElementById("investigator-address").value;
+        const availableSlots = await contractInstance.getAvailableSlots(investigator);
+
+        const slotDropdown = document.getElementById("slot");
+        slotDropdown.innerHTML = "";
+
+        availableSlots.forEach((isAvailable, index) => {
+          if (isAvailable) {
+            const option = document.createElement("option");
+            const startTime = new Date(2025, 4, 3, 16, index * 10); // Example: 4:00 PM + index * 10 minutes
+            const endTime = new Date(startTime.getTime() + 10 * 60000); // Add 10 minutes
+            option.value = index;
+            option.textContent = `${startTime.getHours()}:${startTime.getMinutes()} - ${endTime.getHours()}:${endTime.getMinutes()}`;
+            slotDropdown.appendChild(option);
+          }
         });
 
       } 
