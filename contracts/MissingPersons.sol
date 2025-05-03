@@ -98,7 +98,7 @@ contract MissingPersons {
         uint256 count = 0;
         for (uint256 i = 0; i < adminAddresses.length; i++) {
             if (users[adminAddresses[i]].role == Role.Investigator) {
-                investigators[count] = adminAddresses[i];
+                investigators[count] = investigatorAddresses[i];
                 count++;
             }
         }
