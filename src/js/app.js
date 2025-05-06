@@ -330,27 +330,40 @@ App = {
     const contractInstance = await App.contracts.MissingPersons.deployed();
 
     try {
-      const caseIdsRaw = await contractInstance.getAllCaseIds();
-      const caseIds = caseIdsRaw.map(id => id.toNumber());
-      const tbody = document.getElementById("reportedCasesBody");
-      tbody.innerHTML = "";
+        const caseIdsRaw = await contractInstance.getAllCaseIds();
+        const caseIds = caseIdsRaw.map(id => id.toNumber());
+        const tbody = document.getElementById("reportedCasesBody");
+        tbody.innerHTML = "";
 
-      for (const caseId of caseIds) {
-        const isReported = await contractInstance.isReportedFound(caseId);
-        const status = await contractInstance.getMissingStatusById(caseId);
-        
-        // Check if the case was reported by investigator AND status is Found (1)
-        if (isReported && status == 1) {
-          const caseDetails = await contractInstance.getCaseById(caseId);
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${caseId}</td><td>${caseDetails.name}</td><td>${caseDetails.lastSeenDivision}</td><td>${caseDetails.contactNumber}</td>`;
-          tbody.appendChild(tr);
+        for (const caseId of caseIds) {
+            const isReported = await contractInstance.isReportedFound(caseId);
+            const status = await contractInstance.getMissingStatusById(caseId);
+
+            // Check if the case was reported by investigator AND status is Found (1)
+            if (isReported) {
+                const [
+                    id,
+                    name,
+                    ,
+                    ,
+                    ,
+                    ,
+                    division,
+                    contactNumber
+                ] = await contractInstance.getCaseById(caseId);
+
+                const investigatorAddress = await contractInstance.getInvestigatorByCaseId(caseId);
+                const investigatorName = await contractInstance.getUserName(investigatorAddress);
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${id}</td><td>${name}</td><td>${division}</td><td>${contactNumber}</td><td>${investigatorName}</td>`;
+                tbody.appendChild(tr);
+            }
         }
-      }
 
-      document.getElementById("reportedCasesTable").style.display = "table";
+        document.getElementById("reportedCasesTable").style.display = "table";
     } catch (error) {
-      console.error("Error fetching reported cases:", error);
+        console.error("Error fetching reported cases:", error);
     }
   }
 
