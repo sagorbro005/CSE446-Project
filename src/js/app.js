@@ -232,10 +232,12 @@ App = {
         const investigatorAddresses =  await contractInstance.getAllInvestigators();
         const investigatorDropdown = document.getElementById("investigator-addr");
         investigatorDropdown.innerHTML = "";
-        investigatorAddresses.forEach((investigatorAddr) => {
+        investigatorAddresses.forEach(async (investigatorAddr) => {
+          const investigatorName = await contractInstance.getUserName(investigatorAddr);
+          const investigatorAddrs = await contractInstance.getUserAddress(investigatorAddr);
           const option = document.createElement("option");
           option.value = investigatorAddr;
-          option.textContent = investigatorAddr;
+          option.textContent = `${investigatorName} - ${investigatorAddrs}`;
           investigatorDropdown.appendChild(option);
         });
 

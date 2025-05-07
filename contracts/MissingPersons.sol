@@ -49,6 +49,14 @@ contract MissingPersons {
         return "Not Found";      
     }
 
+    function getUserAddress(address account) public view returns (string memory) {
+        if (users[account].account != address(0)){
+            User memory user = users[account];
+            return user.userAddress;
+        }
+        return "Not Found";      
+    }
+
 
 
     enum Status { Missing, Found }
