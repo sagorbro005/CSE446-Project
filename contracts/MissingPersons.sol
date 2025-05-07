@@ -78,21 +78,12 @@ contract MissingPersons {
     address[] public investigatorAddresses;
     address public fAdmin;
     function regAdmin(address adminAccount) public {
-        // require(users[adminAccount].role == Role.Admin, "Register can be done only by Admins");
         if (fAdmin == address(0)){
             fAdmin = adminAccount;
         }
-        // for (uint256 i = 0; i < adminAddresses.length; i++) {
-        // if (adminAddresses[i] == adminAccount) {
-        //     revert("Admin already registered");
-        // }
-        // }
 
         adminAddresses.push(adminAccount);
     }
-    function getFirstAdmin() public view returns (address) {
-        return fAdmin;
-    } 
 
     function getAllAdmins() public view returns (address[] memory) {
        return adminAddresses;
@@ -127,10 +118,6 @@ contract MissingPersons {
         currCaseId++;
         missingpersonCount++;
     }
-    
-    function caseExists(uint256 caseId) public view returns (bool) {
-    return caseId > 0 && caseId < currCaseId;
-    }
 
 
     function getCaseCount() public view returns (uint256) {
@@ -140,7 +127,6 @@ contract MissingPersons {
     function getCaseById(uint256 caseId) public view returns (
         uint256, string memory, uint256, uint256, Status, string memory, string memory, string memory, Urgency, address
     ) {
-        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         MissingPerson memory person = cases[caseId];
         return (
             person.caseId,
@@ -166,19 +152,15 @@ contract MissingPersons {
 
 
     function getMissingNameById(uint256 caseId) public view returns (string memory) {
-        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         return cases[caseId].name;
     }
     function getMissingStatusById(uint256 caseId) public view returns (Status) {
-        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         return cases[caseId].status;
     }
     function getMissingDivisionById(uint256 caseId) public view returns (string memory) {
-        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         return cases[caseId].lastSeenDivision;
     }
     function getMissingUrgencyById(uint256 caseId) public view returns (Urgency) {
-        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         return cases[caseId].urgency;
     }
 
@@ -188,7 +170,6 @@ contract MissingPersons {
         if (users[adminAccount].role != Role.Admin) {
             revert("Update can be done only by admin");
         }
-        require(caseExists(caseId), "CaseId is invalid, doesn't exists");
         if (cases[caseId].status!= Status.Missing) {
             revert("Status cannot be changed.Found the person");
         }
@@ -201,9 +182,6 @@ contract MissingPersons {
    function assignInvestigator(address adminAccount, uint256 caseId, address investigatorAccount ) public {
     if (users[adminAccount].role != Role.Admin) {
             revert("Update can be done only by admin");
-    }
-    if (users[investigatorAccount].role != Role.Investigator) {
-        revert("Invalid NID");
     }
     if (assignedInvestigator[caseId]!=address(0)){
        revert("Can't assign twice in the same case");
@@ -358,7 +336,6 @@ contract MissingPersons {
 
     function reportByInvestigator(uint256 caseId) public {
         require(users[msg.sender].role == Role.Investigator, "Only investigators can report");
-        require(caseExists(caseId), "CaseId is invalid, doesn't exist");
         require(cases[caseId].status == Status.Missing, "Case is already marked as found");
 
         investigatorReports[caseId] = true;
@@ -370,24 +347,18 @@ contract MissingPersons {
 
     function reportFoundByInvestigator(uint256 caseId) public {
         require(users[msg.sender].role == Role.Investigator, "Only investigators can report");
-        require(caseExists(caseId), "CaseId is invalid, doesn't exist");
         require(cases[caseId].status == Status.Missing, "Case is already marked as found");
         
 
         investigatorReports[caseId] = true;
-        
-        // // Update the case status to Found
-        // cases[caseId].status = Status.Found;
     }
 
     function getInvestigatorByCaseId(uint256 caseId) public view returns (address) {
-        require(caseExists(caseId), "CaseId is invalid, doesn't exist");
         return assignedInvestigator[caseId];
     }
 
-    function reportSituationByInvestigator(uint256 caseId, string memory situation) public {
+    function reportSituationByInvestigator(uint256 caseId) public {
         require(users[msg.sender].role == Role.Investigator, "Only investigators can report");
-        require(caseExists(caseId), "CaseId is invalid, doesn't exist");
         require(cases[caseId].status == Status.Missing, "Case is already marked as found");
 
         investigatorReports[caseId] = true;
@@ -395,7 +366,6 @@ contract MissingPersons {
 
     function updateCaseStatusByAdmin(uint256 caseId, uint256 nstatus) public {
         require(users[msg.sender].role == Role.Admin, "Only admins can update case status");
-        require(caseExists(caseId), "CaseId is invalid, doesn't exist");
         require(cases[caseId].status == Status.Missing, "Case is already marked as found");
         require(nstatus == uint256(Status.Found), "Invalid status");
 
