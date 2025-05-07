@@ -13,7 +13,7 @@ App = {
       try {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         console.log(accounts);
-        App.account = accounts[0]; // Get first connected MetaMask account
+        App.account = accounts[0];
         console.log("Connected account:", App.account);
       } catch (error){
         console.log(error);
@@ -288,6 +288,26 @@ App = {
           }
         });
 
+        const caseIdsRaw = await contractInstance.getAllCaseIds();
+        const caseIds = caseIdsRaw.map(id => id.toNumber());
+
+        const caseIdDropdown = document.getElementById("case-id");
+        caseIdDropdown.innerHTML = "";
+        caseIds.forEach(async (caseId) => {
+          const option = document.createElement("option");
+          option.value = caseId;
+          const missingStatus = await contractInstance.getMissingStatusById(caseId);
+          if (missingStatus == 0){
+            const missingName = await contractInstance.getMissingNameById(caseId);
+            const missingAddr = await contractInstance.getMissingDivisionById(caseId);
+            option.textContent = `${caseId} - ${missingName} - ${missingAddr}`;
+            // option.textContent = caseId;
+            caseIdDropdown.appendChild(option);
+            // assignCaseDrop.appendChild(option);
+          }
+          
+        });
+
       } 
       if (userrole.toString() === "2") { // Investigator
         document.getElementById("reg-form").style.display = "none";
@@ -312,13 +332,19 @@ App = {
     const contractInstance = await App.contracts.MissingPersons.deployed();
 
     try {
-      const [investigatorNids, caseIds, reporterNids, slots] = await contractInstance.viewAppointment();
+      const [investigatorAddresses, caseIds, reporterAddresses, slots] = await contractInstance.viewAppointment();
       const tbody = document.getElementById("appointmentsBody");
       tbody.innerHTML = "";
 
+      const investigatorNids = investigatorAddresses;
+      const reporterNids = reporterAddresses;
+
       for (let i = 0; i < investigatorNids.length; i++) {
+        const investigatorName = await contractInstance.getUserName(investigatorNids[i]);
+        const reporterName = await contractInstance.getUserName(reporterNids[i]);
+        
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${investigatorNids[i]}</td><td>${caseIds[i]}</td><td>${reporterNids[i]}</td><td>${slots[i]}</td>`;
+        tr.innerHTML = `<td>${investigatorName}</td><td>${caseIds[i]}</td><td>${reporterName}</td><td>${slots[i]}</td>`;
         tbody.appendChild(tr);
       }
 
