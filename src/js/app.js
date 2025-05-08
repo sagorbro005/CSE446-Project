@@ -265,10 +265,10 @@ App = {
         const investigatorDropdown = document.getElementById("investigator-address");
         investigatorDropdown.innerHTML = "";
         const investigators = await contractInstance.getAllInvestigators();
-        investigators.forEach((investigator) => {
+        investigators.forEach(async (investigator) => {
           const option = document.createElement("option");
           option.value = investigator;
-          option.textContent = investigator;
+          option.textContent = await contractInstance.getUserName(investigator);
           investigatorDropdown.appendChild(option);
         });
         const investigator = document.getElementById("investigator-address").value;
