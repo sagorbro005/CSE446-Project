@@ -313,6 +313,27 @@ App = {
         document.getElementById("reg-form").style.display = "none";
         document.getElementById("appointments-section").style.display = "block";
         document.getElementById("report-found-section").style.display = "block";
+
+        const caseIdsRaw = await contractInstance.getAllCaseIds();
+        const caseIds = caseIdsRaw.map(id => id.toNumber());
+
+        const caseIdDropdown = document.getElementById("report-case-id");
+        caseIdDropdown.innerHTML = "";
+        caseIds.forEach(async (caseId) => {
+          const option = document.createElement("option");
+          option.value = caseId;
+          const missingStatus = await contractInstance.getMissingStatusById(caseId);
+          if (missingStatus == 0){
+            const missingName = await contractInstance.getMissingNameById(caseId);
+            const missingAddr = await contractInstance.getMissingDivisionById(caseId);
+            option.textContent = `${caseId} - ${missingName} - ${missingAddr}`;
+            // option.textContent = caseId;
+            caseIdDropdown.appendChild(option);
+            // assignCaseDrop.appendChild(option);
+          }
+          
+        });
+
       }
     } catch (error) {
       console.error("Error fetching user role:", error);
